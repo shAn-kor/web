@@ -1,5 +1,12 @@
-use axum::{Router, routing::get};
+use axum::{Router, Json, routing::get, routing::post};
 use tracing::info;
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct User {
+    id: i32,
+    name: String,
+}
 
 #[tokio::main]
 async fn main() {
@@ -12,7 +19,9 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(root))
-        .route("/health", get(health));
+        .route("/health", get(health))
+        .route("/users", get(user))
+        .route("/user", post(add_user));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
@@ -31,4 +40,12 @@ async fn root() -> &'static str {
 
 async fn health() -> &'static str {
     "ok"
+}
+
+async fn user() -> Json<User> {
+    Json(User { id: 1, name: "John".into() })
+}
+
+async fn add_user(Json(user): Json<User>) {
+    info!("{:?}", &user);
 }
