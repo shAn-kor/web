@@ -20,7 +20,5 @@ async fn main() {
 
     info!(address = %listener.local_addr().unwrap(), "server listening");
 
-    axum::serve(listener, app)
-        .await
-        .expect("server error");
+    axum::serve(listener, app).await.expect("server error");
 }
