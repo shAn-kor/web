@@ -3,6 +3,8 @@ use axum::extract::Path;
 use tracing::info;
 
 use super::model::User;
+use crate::state::AppState;
+use axum::extract::State;
 
 pub async fn users() -> Json<Vec<User>> {
     Json(vec![
@@ -13,18 +15,18 @@ pub async fn users() -> Json<Vec<User>> {
     ])
 }
 
-pub async fn add_user(Json(user): Json<User>) -> Json<User> {
+pub async fn add_user(State(state): State<AppState>, Json(user): Json<User>) {
     info!(?user, "user received");
-
-    Json(User {
-        id: 2,
-        name: user.name,
-    })
+    let mut users = state.users.write().unwrap();
+    users.insert(user.id, user);
 }
 
-pub async fn get_user(Path(id): Path<i32>) -> Json<User> {
-    Json(User {
-        id,
-        name: "John".into(),
-    })
+pub async fn get_user(
+    State(state): State<AppState>,
+    Path(id): Path<i32>
+) -> Json<User> {
+    let users = state.users.read().unwrap();
+    info!(?users, "users received");
+    let user = users.get(&id).unwrap().clone();
+    Json(user)
 }
