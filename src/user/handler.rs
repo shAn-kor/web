@@ -6,19 +6,19 @@ use super::model::User;
 use crate::state::AppState;
 use axum::extract::State;
 
-pub async fn users() -> Json<Vec<User>> {
-    Json(vec![
-        User {
-            id: 1,
-            name: "John".into(),
-        }
-    ])
+pub async fn users(
+    State(state): State<AppState>,
+) -> Json<Vec<User>> {
+    let users = state.users.read().unwrap();
+
+    Json(users.values().cloned().collect())
 }
 
 pub async fn add_user(State(state): State<AppState>, Json(user): Json<User>) {
     info!(?user, "user received");
     let mut users = state.users.write().unwrap();
     users.insert(user.id, user);
+    info!(?users, "users updated");   
 }
 
 pub async fn get_user(

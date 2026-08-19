@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use crate::user::model::User;
+use crate::user::User;
 
 #[derive(Clone)]
 pub struct AppState {
