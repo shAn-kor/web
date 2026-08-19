@@ -20,8 +20,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(root))
         .route("/health", get(health))
-        .route("/users", get(user))
-        .route("/user", post(add_user));
+        .route("/user", get(user).post(add_user));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
