@@ -1,0 +1,11 @@
+mod handler;
+mod model;
+
+use axum::{Router, routing::{get, post}};
+
+pub fn router() -> Router {
+    Router::new().route(
+        "/users",
+        get(handler::get_user).post(handler::add_user),
+    )
+}
